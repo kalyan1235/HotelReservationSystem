@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hotel Reservation System</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>Hotel Reservation System</h1>
+
+  <nav class="card">
+    <button onclick="loadRooms()">Available Rooms</button>
+    <button onclick="loadReservations()">All Reservations</button>
+  </nav>
+
+  <section class="card">
+    <h2>Book a Room</h2>
+    <form id="bookForm">
+      <input type="text" name="customerName" placeholder="Customer Name" required />
+      <input type="number" name="roomId" placeholder="Room ID (from Available Rooms)" required />
+      <label>Check-in <input type="date" name="checkIn" required /></label>
+      <label>Check-out <input type="date" name="checkOut" required /></label>
+      <button type="submit">Book</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Cancel Booking</h2>
+    <form id="cancelForm">
+      <input type="number" name="bookingId" placeholder="Booking ID (from Reservations)" required />
+      <button type="submit">Cancel Booking</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Output</h2>
+    <pre id="output">(results will appear here)</pre>
+  </section>
+
+  <script>
+    async function loadRooms() {
+      const res = await fetch("RoomServlet");
+      const data = await res.json();
+      document.getElementById("output").textContent =
+        JSON.stringify(data, null, 2);
+    }
+
+    async function loadReservations() {
+      const res = await fetch("ReservationsServlet");
+      const data = await res.json();
+      document.getElementById("output").textContent =
+        JSON.stringify(data, null, 2);
+    }
+
+    document.getElementById("bookForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const params = new URLSearchParams(new FormData(e.target));
+      const res = await fetch("BookingServlet", { method: "POST", body: params });
+      const data = await res.json();
+      alert(data.msg); // ✅ pop-up message
+      document.getElementById("output").textContent =
+        JSON.stringify(data, null, 2);
+    });
+
+    document.getElementById("cancelForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const params = new URLSearchParams(new FormData(e.target));
+      const res = await fetch("CancelServlet", { method: "POST", body: params });
+      const data = await res.json();
+      alert(data.msg); // ✅ pop-up message
+      document.getElementById("output").textContent =
+        JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>
